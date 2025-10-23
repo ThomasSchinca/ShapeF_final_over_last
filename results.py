@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
-from cycler import cycler
 import random
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
@@ -10,7 +9,6 @@ from sklearn.preprocessing import MinMaxScaler
 from functions import get_dynamic_clusters
 from matplotlib.ticker import FuncFormatter
 from scipy.stats import ttest_rel,ttest_1samp
-import statsmodels.api as sm
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 import os 
@@ -20,10 +18,6 @@ mpl.rcParams['text.usetex'] = True
 mpl.rcParams['font.family'] = 'sans-serif'
 mpl.rcParams['font.sans-serif'] = ['Helevetica']
 mpl.rcParams['text.latex.preamble'] = r'\usepackage{lmodern}\usepackage[T1]{fontenc}'
-
-# Plot parameters 
-#plot_params = {"text.usetex":True,"font.family":"serif","font.size":5,"xtick.labelsize":5,"ytick.labelsize":5,"axes.labelsize":5,"figure.titlesize":20,"figure.figsize":(5,8),"axes.prop_cycle":cycler(color=['black','rosybrown','gray','indianred','red','maroon','silver',])}
-#plt.rcParams.update(plot_params)
 
 # Load the dataset 
 df = pd.read_csv('Datasets/hctsa_timeseries-data.csv',names=range(10000))
