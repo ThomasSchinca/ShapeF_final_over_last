@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
-from cycler import cycler
 import random
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
@@ -10,13 +9,15 @@ from sklearn.preprocessing import MinMaxScaler
 from functions import get_dynamic_clusters
 from matplotlib.ticker import FuncFormatter
 from scipy.stats import ttest_rel,ttest_1samp
-import statsmodels.api as sm
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
-
-# Plot parameters 
-plot_params = {"text.usetex":True,"font.family":"serif","font.size":5,"xtick.labelsize":5,"ytick.labelsize":5,"axes.labelsize":5,"figure.titlesize":20,"figure.figsize":(5,8),"axes.prop_cycle":cycler(color=['black','rosybrown','gray','indianred','red','maroon','silver',])}
-plt.rcParams.update(plot_params)
+import os 
+os.environ['PATH'] = "/Library/TeX/texbin:" + os.environ.get('PATH', '')
+import matplotlib as mpl
+mpl.rcParams['text.usetex'] = True
+mpl.rcParams['font.family'] = 'sans-serif'
+mpl.rcParams['font.sans-serif'] = ['Helevetica']
+mpl.rcParams['text.latex.preamble'] = r'\usepackage{lmodern}\usepackage[T1]{fontenc}'
 
 # Load the dataset 
 df = pd.read_csv('Datasets/hctsa_timeseries-data.csv',names=range(10000))
@@ -130,12 +131,12 @@ for row, ax in zip(random.sample(range(1000),k=84), axes.ravel()):
     row=random.sample(range(1000),k=1)[0]
     ax.set_title(ts_kind.iloc[row],size=12)
     ts_tot = df.iloc[row,:200]
-    ax.plot(ts_tot,linestyle="solid")
+    ax.plot(ts_tot,linestyle="solid",c="black")
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
-plt.savefig("out/example_series.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/example_series.eps",dpi=300,bbox_inches="tight")
 
 #################
 ### Dendogram ###
@@ -161,16 +162,17 @@ dendrogram(Z, orientation='top', ax=axs,color_threshold=0,above_threshold_color=
 co=0
 for i, centroid in enumerate(h['cluster_shape']):
     centroid_ax = axs.inset_axes([(ku.index(co)/6), -0.45, 1/6, 0.4])
-    centroid_ax.plot(centroid,color="black",marker="o",linewidth=3)
     centroid_ax.axis('off')
     centroid_ax.set_ylim(0,1)
     for k in h['sequences'][h['seqences_clusters']==i]:
-        centroid_ax.plot(k, color="gray",alpha=0.2)
+        centroid_ax.plot(k, color="lightgray",linewidth=1)
     co=co+1
+    centroid_ax.plot(centroid,color="black",marker="o",linewidth=3)
+
 axs.set_xticks([*range(6)],['']*6)
 axs.set_axis_off()
 axs.set_yticks([0],[''])
-plt.savefig("out/example_dendogram_I.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/example_dendogram_I.eps",dpi=300,bbox_inches="tight")
 
 # k=6 and win=9
 fig, axs = plt.subplots(figsize=(20, 7))
@@ -184,16 +186,16 @@ dendrogram(Z, orientation='top', ax=axs,color_threshold=0,above_threshold_color=
 co=0
 for i, centroid in enumerate(h['cluster_shape']):
     centroid_ax = axs.inset_axes([(ku.index(co)/6), -0.45, 1/6, 0.4])
-    centroid_ax.plot(centroid, color="black",marker="o",linewidth=3)
     centroid_ax.axis('off')
     centroid_ax.set_ylim(0,1)
     for k in h['sequences'][h['seqences_clusters']==i]:
-        centroid_ax.plot(k, color="gray",alpha=0.2)
+        centroid_ax.plot(k, color="lightgray",linewidth=1)
+    centroid_ax.plot(centroid, color="black",marker="o",linewidth=3)
     co=co+1
 axs.set_xticks([*range(6)],['']*6)
 axs.set_axis_off()
 axs.set_yticks([0],[''])
-plt.savefig("out/example_dendogram_II.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/example_dendogram_II.eps",dpi=300,bbox_inches="tight")
 
 # k=4 and win=5
 fig, axs = plt.subplots(figsize=(20, 7))
@@ -207,16 +209,16 @@ dendrogram(Z, orientation='top', ax=axs,color_threshold=0,above_threshold_color=
 co=0
 for i, centroid in enumerate(h['cluster_shape']):
     centroid_ax = axs.inset_axes([(ku.index(co)/4), -0.45, 1/4, 0.4])
-    centroid_ax.plot(centroid, color="black",marker="o",linewidth=3)
     centroid_ax.axis('off')
     centroid_ax.set_ylim(0,1)
     for k in h['sequences'][h['seqences_clusters']==i]:
-        centroid_ax.plot(k, color="gray",alpha=0.2)
+        centroid_ax.plot(k, color="lightgray",linewidth=1)
+    centroid_ax.plot(centroid, color="black",marker="o",linewidth=3)
     co=co+1
 axs.set_xticks([*range(4)],['']*4)
 axs.set_axis_off()
 axs.set_yticks([0],[''])
-plt.savefig("out/example_dendogram_III.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/example_dendogram_III.eps",dpi=300,bbox_inches="tight")
 
 # k=8 and win=5
 fig, axs = plt.subplots(figsize=(20, 7))
@@ -230,16 +232,16 @@ dendrogram(Z, orientation='top', ax=axs,color_threshold=0,above_threshold_color=
 co=0
 for i, centroid in enumerate(h['cluster_shape']):
     centroid_ax = axs.inset_axes([(ku.index(co)/8), -0.45, 1/8, 0.4])
-    centroid_ax.plot(centroid, color="black",marker="o",linewidth=3)
     centroid_ax.axis('off')
     centroid_ax.set_ylim(0,1)
     for k in h['sequences'][h['seqences_clusters']==i]:
-        centroid_ax.plot(k, color="gray",alpha=0.2)
+        centroid_ax.plot(k, color="lightgray",linewidth=1)
+    centroid_ax.plot(centroid, color="black",marker="o",linewidth=3)
     co=co+1
 axs.set_xticks([*range(8)],['']*8)
 axs.set_axis_off()
 axs.set_yticks([0],[''])
-plt.savefig("out/example_dendogram_IV.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/example_dendogram_IV.eps",dpi=400,bbox_inches="tight")
 
 ######################
 ### Results---Plot ###
@@ -320,12 +322,12 @@ ax2.scatter(mean2_data.index, mean2_data['mean2'], color=orange_color, marker='o
 ax2.errorbar(mean2_data.index, mean2_data['mean2'], yerr=mean2_data['std2'], fmt='none', color=orange_color, linewidth=linewidth)
 ax2.hlines(0, -0.5, 10.5, linestyles='--', color=orange_color, linewidth=linewidth)
 ax2.set_yticks([-0.4,-0.3,-0.2,-0.1,0,0.1,0.2],["-0.4","-0.3","-0.2","-0.1","0","0.1","0.2"],fontsize=fonts)
-ax1.set_ylabel('Mean Squared Error (MSE)', color=blue_color,fontsize=fonts)
-ax2.set_ylabel('MSE Improvement', color=orange_color,fontsize=fonts)
+ax1.set_ylabel('Mean squared error (MSE)', color=blue_color,fontsize=fonts)
+ax2.set_ylabel('MSE improvement', color=orange_color,fontsize=fonts)
 ax1.set_xticks([*range(11)],['ARIMA','D-ARIMA','ARIMA-C','','RF','D-RF','RF-C','','LSTM','D-LSTM','LSTM-C'],fontsize=fonts,rotation=45)
 ax1.set_yticks([0.009,0.01,0.011,0.012,0.013,0.014,0.015],["0.009","0.01","0.011","0.012","0.013","0.014","0.015"],fontsize=fonts)
 ax1.grid(False)
-plt.savefig("out/mse_improv.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/mse_improv.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 #####################
@@ -353,7 +355,7 @@ last_10 = results.tail(10)
 for i in range(len(last_10)):
     plt.text(last_10.index[i],last_10['change'].iloc[i],f"{last_10['country'].iloc[i]}",
              fontsize=15, ha='left', color='black')
-plt.savefig("out/scatter1a",dpi=200,bbox_inches="tight")
+plt.savefig("Results/scatter1a.eps",dpi=300,bbox_inches="tight")
 
 # Difference MSE RF and D-RF
 results={"country":[],"change":[]}
@@ -376,7 +378,7 @@ last_10 = pd.concat([results.tail(5),results.head(5)])
 for i in range(len(last_10)):
     plt.text(last_10.index[i],last_10['change'].iloc[i],f"{last_10['country'].iloc[i]}",
              fontsize=15, ha='left', color='black')
-plt.savefig("out/scatter2a",dpi=200,bbox_inches="tight")
+plt.savefig("Results/scatter2a.eps",dpi=300,bbox_inches="tight")
 
 # Difference MSE LSTM and D-LSTM
 results={"country":[],"change":[]}
@@ -399,7 +401,7 @@ last_10 = pd.concat([results.tail(5),results.head(5)])
 for i in range(len(last_10)):
     plt.text(last_10.index[i],last_10['change'].iloc[i],f"{last_10['country'].iloc[i]}",
              fontsize=15, ha='left', color='black')
-plt.savefig("out/scatter3a",dpi=200,bbox_inches="tight")
+plt.savefig("Results/scatter3a.eps",dpi=300,bbox_inches="tight")
 
 #################################
 ### Results---Random clusters ###
@@ -564,12 +566,12 @@ ax2.scatter(mean2_data.index, mean2_data['mean2'], color=orange_color, marker='o
 ax2.errorbar(mean2_data.index, mean2_data['mean2'], yerr=mean2_data['std2'], fmt='none', color=orange_color, linewidth=linewidth)
 ax2.hlines(0, -0.5, 10.5, linestyles='--', color=orange_color, linewidth=linewidth)
 ax2.set_yticks([-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1],["-0.5","-0.4","-0.3","-0.2","-0.1","0","0.1"],fontsize=fonts)
-ax1.set_ylabel('Mean Squared Error (MSE)', color=blue_color,fontsize=fonts)
-ax2.set_ylabel('MSE Improvement', color=orange_color,fontsize=fonts)
+ax1.set_ylabel('Mean squared error (MSE)', color=blue_color,fontsize=fonts)
+ax2.set_ylabel('MSE improvement', color=orange_color,fontsize=fonts)
 ax1.set_xticks([*range(11)],['ARIMA','D-ARIMA','ARIMA-C','','RF','D-RF','RF-C','','LSTM','D-LSTM','LSTM-C'],fontsize=fonts,rotation=45)
 ax1.set_yticks([0.009,0.01,0.011,0.012,0.013,0.014],["0.009","0.01","0.011","0.012","0.013","0.014"],fontsize=fonts)
 ax1.grid(False)
-plt.savefig("out/mse_improv_random.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/mse_improv_random.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 ####################
@@ -599,7 +601,7 @@ ax2.set_yticks([-2,0,2,4,6,8],["-2","0","2","4","6","8"],size=20)
 patch1 = mlines.Line2D([], [], color='black', marker='o', linestyle='None', markersize=10, label='Difference')
 patch2 = mlines.Line2D([], [], color='gray', marker='o', linestyle='None', markersize=10, label='Log-ratio')
 plt.legend(handles=[patch1, patch2],fontsize='15')         
-plt.savefig("out/scatter4a",dpi=200,bbox_inches="tight")
+plt.savefig("Results/scatter4a.eps",dpi=300,bbox_inches="tight")
 
 ############################################################
 ### Distributions of positive, zero, negative log ratios ###
@@ -755,7 +757,7 @@ patch2 = mpatches.Patch(color='darkgray', label='Zero')
 patch1 = mpatches.Patch(color='gainsboro', label='Negative')        
 fig.legend(handles=[patch1,patch2,patch3],fontsize=40,ncol=3,loc='center', bbox_to_anchor=(0.5,-0.05))
 plt.tight_layout()
-plt.savefig("out/bar_plot_distributions",dpi=200,bbox_inches="tight")
+plt.savefig("Results/bar_plot_distributions.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 ##################
@@ -799,19 +801,6 @@ grouped_mean= grouped_mean.reset_index()
 grouped_mean.sort_values(by=['log_ratio'], ascending=True, inplace=True)
 grouped_mean=grouped_mean.dropna()
 
-# Plot
-fig, ax1 = plt.subplots(figsize=(10,8))
-y=list(range(0,62))
-ax1.scatter(y,grouped_mean.sort_values(by=['log_ratio'], ascending=True).log_ratio, s=20, alpha=1, color='black', marker="o")
-grouped_mean=grouped_mean.reset_index()
-last_10 = pd.concat([grouped_mean.tail(10),grouped_mean.head(5)])
-for i in range(len(last_10)):
-    plt.text(last_10.index[i],last_10['log_ratio'].iloc[i],f"{last_10['ts_type'].iloc[i]}",
-             fontsize=15, ha='left', color='black')
-plt.xticks([])
-plt.yticks(size=20)
-plt.savefig("out/arima_scatter",dpi=200,bbox_inches="tight")
-
 # Plot best performing time series
 def remove_box(ax):
     ax.spines['top'].set_visible(False)
@@ -852,12 +841,10 @@ while col<5:
                 row=row+1
                 if row==5:
                     col=col+1
-                    row=0            
-        
-                
+                    row=0                       
                 
 plt.tight_layout()
-plt.savefig("out/cases_best_grid_arima.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/cases_best_grid_arima.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 # Plot worst performing time series
@@ -894,10 +881,9 @@ while col<5:
                 if row==5:
                     col=col+1
                     row=0            
-        
-                
+               
 plt.tight_layout()
-plt.savefig("out/cases_worst_grid_arima.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/cases_worst_grid_arima.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 # RF #
@@ -938,19 +924,6 @@ grouped_mean= grouped_mean.reset_index()
 grouped_mean.sort_values(by=['log_ratio'], ascending=True, inplace=True)
 grouped_mean=grouped_mean.dropna()
 
-# Plot
-fig, ax1 = plt.subplots(figsize=(10,8))
-y=list(range(0,62))
-ax1.scatter(y,grouped_mean.sort_values(by=['log_ratio'], ascending=True).log_ratio, s=20, alpha=1, color='black', marker="o")
-grouped_mean=grouped_mean.reset_index()
-last_10 = pd.concat([grouped_mean.tail(10),grouped_mean.head(5)])
-for i in range(len(last_10)):
-    plt.text(last_10.index[i],last_10['log_ratio'].iloc[i],f"{last_10['ts_type'].iloc[i]}",
-             fontsize=15, ha='left', color='black')
-plt.xticks([])
-plt.yticks(size=20)
-plt.savefig("out/rf_scatter",dpi=200,bbox_inches="tight")
-
 # Plot best performing time series
 fig, axs = plt.subplots(5, 5, figsize=(18,12))
 row=0
@@ -984,12 +957,10 @@ while col<5:
                 row=row+1
                 if row==5:
                     col=col+1
-                    row=0            
-        
-                
+                    row=0                  
                 
 plt.tight_layout()
-plt.savefig("out/cases_best_grid_rf.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/cases_best_grid_rf.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 # Plot worst performing time series
@@ -1027,10 +998,8 @@ while col<5:
                     col=col+1
                     row=0            
         
-                
-                
 plt.tight_layout()
-plt.savefig("out/cases_worst_grid_rf.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/cases_worst_grid_rf.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 # LSTM #
@@ -1072,19 +1041,6 @@ grouped_mean= grouped_mean.reset_index()
 grouped_mean.sort_values(by=['log_ratio'], ascending=True, inplace=True)
 grouped_mean=grouped_mean.dropna()
 
-# Plot
-fig, ax1 = plt.subplots(figsize=(10,8))
-y=list(range(0,62))
-ax1.scatter(y,grouped_mean.sort_values(by=['log_ratio'], ascending=True).log_ratio, s=20, alpha=1, color='black', marker="o")
-grouped_mean=grouped_mean.reset_index()
-last_10 = pd.concat([grouped_mean.tail(10),grouped_mean.head(5)])
-for i in range(len(last_10)):
-    plt.text(last_10.index[i],last_10['log_ratio'].iloc[i],f"{last_10['ts_type'].iloc[i]}",
-             fontsize=15, ha='left', color='black')
-plt.xticks([])
-plt.yticks(size=20)
-plt.savefig("out/lstm_scatter",dpi=200,bbox_inches="tight")
-
 # Plot best performing time series  
 fig, axs = plt.subplots(5, 5, figsize=(18,12))
 row=0
@@ -1120,9 +1076,8 @@ while col<5:
                     col=col+1
                     row=0            
         
-                
 plt.tight_layout()
-plt.savefig("out/cases_best_grid_lstm.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/cases_best_grid_lstm.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 
@@ -1161,10 +1116,8 @@ while col<5:
                     col=col+1
                     row=0            
         
-                
-                
 plt.tight_layout()
-plt.savefig("out/cases_worst_grid_lstm.jpeg",dpi=400,bbox_inches="tight")
+plt.savefig("Results/cases_worst_grid_lstm.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 

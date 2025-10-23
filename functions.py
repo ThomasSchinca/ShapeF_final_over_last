@@ -36,97 +36,55 @@ def get_dynamic_input_output(y: pd.Series,
                              output: bool=True,
                              train_test_split: float=0.7):
     
-    """This function takes a time series as input, and returns
-    time sequences of length number_s, and a dummy set of the 
-    obtained clusters. If no_output is set to False, the function 
-    also returns the output, for an autoregressive setup. 
-    
-    Parameters:
-        y (pd.Series): Data input
-        ar (int): Number of observations to exclude from beginning of the time series
-        n_clu (int): Number of clusters
-        number_s (int): Length of time window
-        model: Model for clustering
-        output (bool): Return output for autoregressive setup
-        train_test_split (float): Cut-off for train test data split
-        
-    Return: 
-        (dict): Containing input (time series and clusters) and output
-        if output == True for autoregressive setup
-    """
- 
-    # Training data
     ex=y.iloc[:int(train_test_split*len(y))]
     ts_seq=[]
     
-    # Make list of lists, 
-    # each sub-list contains number_s observations
     for i in range(number_s,len(ex)):
         ts_seq.append(y.iloc[i-number_s:i])
         
-    # Convert into array,
-    # each row is a time series of number_s observations 
     ts_seq=np.array(ts_seq)
     
-    # Sacling
     ts_seq_l= pd.DataFrame(ts_seq).T
     ts_seq_l=(ts_seq_l-ts_seq_l.min())/(ts_seq_l.max()-ts_seq_l.min())
-    ts_seq_l = ts_seq_l.fillna(0) # if seq uniform 
+    ts_seq_l = ts_seq_l.fillna(0) 
     ts_seq_l=np.array(ts_seq_l.T)
     
-    # Reshape array,
-    # each sub array contains times series of number_s observations
     ts_seq_l=ts_seq_l.reshape(len(ts_seq_l),number_s,1)
     
-    # Clustering and convert into dummy set
     model.n_clusters=n_clu
     m_dba = model.fit(ts_seq_l)
     cl= m_dba.labels_
     cl=pd.Series(cl)
     cl=pd.get_dummies(cl)
         
-    # Test data    
     ts_seq_2=[]
     
-    # Make list of lists, 
-    # each sub-list contains number_s observations
     for i in range(len(ex),len(y)):
         ts_seq_2.append(y.iloc[i-number_s:i])
         
-    # Convert into array,
-    # each row is a time series of number_s observations   
     ts_seq_2=np.array(ts_seq_2)
     
-    # Sacling
     ts_seq_l= pd.DataFrame(ts_seq_2).T
     ts_seq_l=(ts_seq_l-ts_seq_l.min())/(ts_seq_l.max()-ts_seq_l.min())
     ts_seq_l=np.array(ts_seq_l.T)
     
-    # Reshape array,
-    # each sub array contains times series of number_s observations
     ts_seq_l=ts_seq_l.reshape(len(ts_seq_l),number_s,1)
     
-    # Use trained knn model to predict clusters in test data
-    # and convert into dummy set
     y_test = m_dba.predict(ts_seq_l)
     y_test=pd.Series(y_test)
     y_test=pd.get_dummies(y_test)
     
-    # Make sure that length of dummy set is equal to n_clu
-    # If not, add empty column 
     y_t = pd.DataFrame(columns=range(n_clu))
     y_test= pd.concat([y_t,y_test],axis=0)   
     y_test = y_test.fillna(0)
 
-    # Merge test and training data
     ts_seq=np.concatenate([ts_seq,ts_seq_2],axis=0)
     cl=pd.concat([cl,y_test])
     
-    # Return output and input     
     if output == True:
         return({'input':np.concatenate([np.array(ts_seq[:,-ar:]),np.array(cl)],axis=1)[:-1,:],
                 'output':ts_seq[1:,-1]})
-    # Return only input
+
     elif output == False:
         return({'input':np.concatenate([np.array(ts_seq[:,-ar:]),np.array(cl)],axis=1)})
  
@@ -143,61 +101,33 @@ def get_dynamic_clusters(y: pd.Series,
                          plot: str=None, 
                          plot_params: dict=None,
                          path: str=None):
-    
-    """This function takes time series as input and performs a cluster analysis. 
-    The centroids, cluster assignments and time series are returned. 
-    
-    Parameters:
-        y (pd.Series): Data input
-        n_clu (int): Number of clusters
-        number_s (int): Length of time window
-        model: Model for clustering
-        plot (str): Whether to return no plot ("none"), one plot ("one")
-                    or multiple ("multiple")
-        
-    Return: 
-        (dict): Containing centroids of cluster, cluster assignments and time series
-        if plot = 'one' or 'multiple', figure showing centroids is returned
-    """
-    
+      
     ts_seq=[]
     
-    # Make list of lists, 
-    # each sub-list contains number_s observations
     for i in range(number_s,len(y)):
         ts_seq.append(y.iloc[i-number_s:i])
         
-    # Convert into array,
-    # each row is a time series of number_s observations 
     ts_seq=np.array(ts_seq)
     
-    # Scaling 
     ts_seq_l= pd.DataFrame(ts_seq).T
     ts_seq_l=(ts_seq_l-ts_seq_l.min())/(ts_seq_l.max()-ts_seq_l.min())
-    ts_seq_l = ts_seq_l.fillna(0) # if seq uniform 
+    ts_seq_l = ts_seq_l.fillna(0) 
     ts_seq_l=np.array(ts_seq_l.T)
     
-    
-    # Reshape array,
-    # each sub array contains times series of number_s observations
     ts_seq_l=ts_seq_l.reshape(len(ts_seq_l),number_s,1)
     
-    # Clustering
     model.n_clusters=n_clu
     m_dba = model.fit(ts_seq_l)
     cl= m_dba.labels_
     
-    # Plot none
     if plot==None:
        return({'cluster_shape':m_dba.cluster_centers_,
                'seqences_clusters':cl,
                'sequences':ts_seq})
    
-    # Plot none
     if plot_params!=None: 
             plt.rcParams.update(plot_params)
     
-    # Plot one
     if plot=='one':
         fig = plt.figure()
         col = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -206,7 +136,7 @@ def get_dynamic_clusters(y: pd.Series,
                          color=col[i],
                          label='Cluster '+str(i+1))
         plt.legend(loc=(1.04, 0))
-        # Save
+
         if path!=None:
             plt.savefig(path,
                         dpi=100,
@@ -217,21 +147,21 @@ def get_dynamic_clusters(y: pd.Series,
                'sequences':ts_seq},
                fig)
     
-    # Plot multiple
     if plot=='multiple':
         fig, axes = plt.subplots(nrows=math.ceil(n_clu/3),ncols=3)
         plt.setp(axes, xticks=[], yticks=[])
         for i, ax in zip(np.unique(m_dba.labels_), axes.ravel()):
             ax.plot(m_dba.cluster_centers_[i])
-        # Remove empty subplots 
+
         diff = math.ceil(n_clu/3) *3 - n_clu
         for d in range(1, diff+1): 
             axes.flat[(-d)].set_visible(False)
-        # Save
+
         if path!=None:
             plt.savefig(path,
                         dpi=100,
                         bbox_inches='tight')
+     
         return({'cluster_shape':m_dba.cluster_centers_,
                'seqences_clusters':cl,
                'sequences':ts_seq},
@@ -251,60 +181,52 @@ def extract_b_clu(y: pd.Series,
                   select: str='top',
                   top: int=5,
                   thres: float=0.15):
-    
-    """ """
-    
+        
     df_std=pd.DataFrame()
     X=pd.DataFrame()
     
-    # Training data
     y_eff = y.iloc[:int(train_test_split*len(y))]
     
-    # For varying cluster number
     for n_clu in test_clu:
-        # For varyinf window length
         for number_s in test_win:
-            # Update number of clusters in model
             model.n_clusters=n_clu
             
-            # Get clusters and time sequences
             clus=get_dynamic_clusters(y_eff,
                                       number_s=number_s,
                                       n_clu=n_clu,
                                       model=model)
-            # Get input
+         
             clu_input=get_dynamic_input_output(y,
                                                n_clu=n_clu,
                                                number_s=number_s,
                                                model=model,
                                                train_test_split=train_test_split,
                                                output=False)
-                            # Last row of time series, without first observation
+      
             data=pd.concat([pd.Series(clus['sequences'][1:,-1]),
-                            # Last row of cluster assignments, with first observation
                             pd.Series(clus['seqences_clusters'][:-1])],
                             axis=1)
-            # Std of time series for each cluster
+
             df_std=pd.concat([df_std,data.groupby(1).std()],
                              axis=0)
-            # Get input, exlduing first column
+
             X=pd.concat([X,
                          pd.DataFrame(clu_input['input'][:,1:],
                          index=range(number_s,len(y)))],
                          axis=1)
             
-    # Rename columns
     X.columns=range(len(X.columns))
     df_std.index=range(len(df_std))
     
-    # Select top 5, with lowest std
     if select=='top':
         out = X.iloc[:,df_std.sort_values(0).index[:top]]
-    # Select if std below threshold
+
     elif select=='threshold':
         out = X.iloc[:,df_std[df_std[0]<thres].index]
+  
     out=out.fillna(0)    
     out= out.loc[:,out.apply(pd.Series.nunique)!=1]
+  
     return(out)
 
 # =============================================================================
@@ -322,22 +244,16 @@ def extract_clu_std(y: pd.Series,
                   top: int=5,
                   thres: float=0.15):
     
-    """ """
     
     df_std=pd.DataFrame()
     X=pd.DataFrame()
     
-    # Training data
     y_eff = y.iloc[:int(train_test_split*len(y))]
     
-    # For varying cluster number
     for n_clu in test_clu:
-        # For varyinf window length
         for number_s in test_win:
-            # Update number of clusters in model
             model.n_clusters=n_clu
             
-            # Get clusters and time sequences
             clus=get_dynamic_clusters(y_eff,
                                       number_s=number_s,
                                       n_clu=n_clu,
@@ -349,24 +265,23 @@ def extract_clu_std(y: pd.Series,
                                                model=model,
                                                train_test_split=train_test_split,
                                                output=False)
-                            # Last row of time series, without first observation
+
             data=pd.concat([pd.Series(clus['sequences'][1:,-1]),
-                            # Last row of cluster assignments, with first observation
                             pd.Series(clus['seqences_clusters'][:-1])],
                             axis=1)
-            # Std of time series for each cluster
+
             df_std=pd.concat([df_std,data.groupby(1).std()],
                              axis=0)
-            # Get input, exlduing first column
+
             X=pd.concat([X,
                          pd.DataFrame(clu_input['input'][:,1:],
                          index=range(number_s,len(y)))],
                          axis=1)
             
-    # Rename columns
     X.columns=range(len(X.columns))
     df_std.index=range(len(df_std))
     df_std=df_std.sort_values(0)
+   
     return(df_std.iloc[:10,:])
 
 
@@ -597,9 +512,6 @@ def Compare_pred_exo_only(y,X,plot_res=False,train_test_split=0.7):
     return({'Darima_pred':pred})
        
 
-
-
-
 def opti_clu_fit(y,test_clu,test_win,opti='brut',metric='aic',iterac=None):
     if opti=='brut':
         if metric=='aic':
@@ -647,9 +559,6 @@ def opti_clu_fit(y,test_clu,test_win,opti='brut',metric='aic',iterac=None):
                     min_resid=score
                     para=[n_clu,number_s]
     return(para)        
-
-
-
 
     
 
@@ -908,7 +817,6 @@ def Compare_RF_exo_only(y,
     return({'rfx_pred':pred})
               
         
-
 
 # =============================================================================
 # METRICS
