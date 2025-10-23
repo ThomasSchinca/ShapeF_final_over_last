@@ -131,7 +131,7 @@ for row, ax in zip(random.sample(range(1000),k=84), axes.ravel()):
     row=random.sample(range(1000),k=1)[0]
     ax.set_title(ts_kind.iloc[row],size=12)
     ts_tot = df.iloc[row,:200]
-    ax.plot(ts_tot,linestyle="solid")
+    ax.plot(ts_tot,linestyle="solid",c="black")
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
