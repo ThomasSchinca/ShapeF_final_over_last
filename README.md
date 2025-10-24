@@ -32,6 +32,6 @@ The script should take approximately 5 days to run.
 - main.py: Main script.
 - main_random.py: Trains models with random clusters.
 - results.py: Produces the findings discussed in the paper. 
-- functions.py and functions_deepl_learning.py: Functions needed to run the model. 
+- functions.py and functions_deep_learning.py: Functions needed to run the model. 
 - Datasets/: Contains input data required.
 - Results/: Stores the predictions and generated images.
