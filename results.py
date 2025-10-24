@@ -41,16 +41,16 @@ print(round(means_arima,5))
 print(round(df_tot.iloc[:,0].std()/np.sqrt(len(df_tot)),5))
 print(round(df_tot.iloc[:,1].std()/np.sqrt(len(df_tot)),5))
 print(round(df_tot.iloc[:,2].std()/np.sqrt(len(df_tot)),5))
-print(round(ttest_rel(df_tot.iloc[:,0],df_tot.iloc[:,1])[1],5))
-print(round(ttest_rel(df_tot.iloc[:,0],df_tot.iloc[:,2])[1],5))
+print(f"{round(ttest_rel(df_tot.iloc[:,0],df_tot.iloc[:,1])[1],5):.5f}")
+print(f"{round(ttest_rel(df_tot.iloc[:,0],df_tot.iloc[:,2])[1],5):.5f}")
 
 # MSE improvement
 print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]).mean(),5))
 print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]).mean(),5))
 print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]).std()/np.sqrt(len(df_tot)),5))
 print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]).std()/np.sqrt(len(df_tot)),5))
-print(round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]), 0)[1],5))
-print(round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]), 0)[1],5))
+print(f"{round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]), 0)[1],5):.5f}")
+print(f"{round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]), 0)[1],5):.5f}")
 
 # RF
 df_tot_1= pd.read_csv('Results/resu_rf.csv',index_col=(0))
@@ -68,16 +68,16 @@ print(round(means_rf,5))
 print(round(df_tot_1.iloc[:,0].std()/np.sqrt(len(df_tot_1)),5))
 print(round(df_tot_1.iloc[:,1].std()/np.sqrt(len(df_tot_1)),5))
 print(round(df_tot_1.iloc[:,2].std()/np.sqrt(len(df_tot_1)),5))
-print(round(ttest_rel(df_tot_1.iloc[:,0],df_tot_1.iloc[:,1])[1],5))
-print(round(ttest_rel(df_tot_1.iloc[:,0],df_tot_1.iloc[:,2])[1],5))
+print(f"{round(ttest_rel(df_tot_1.iloc[:,0],df_tot_1.iloc[:,1])[1],5):.5f}")
+print(f"{round(ttest_rel(df_tot_1.iloc[:,0],df_tot_1.iloc[:,2])[1],5):.5f}")
 
 # MSE improvement
 print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]).mean(),5))
 print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]).mean(),5))
 print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]).std()/np.sqrt(len(df_tot_1)),5))
 print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]).std()/np.sqrt(len(df_tot_1)),5))
-print(round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]), 0)[1],5))
-print(round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]), 0)[1],5))
+print(f"{round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]), 0)[1],5):.5f}")
+print(f"{round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]), 0)[1],5):.5f}")
 
 # LSTM
 df_tot_0= pd.read_csv('Results/resu_nn.csv',index_col=(0))
@@ -95,16 +95,16 @@ print(round(means_nn,5))
 print(round(df_tot_0.iloc[:,0].std()/np.sqrt(len(df_tot_0)),5))
 print(round(df_tot_0.iloc[:,1].std()/np.sqrt(len(df_tot_0)),5))
 print(round(df_tot_0.iloc[:,2].std()/np.sqrt(len(df_tot_0)),5))
-print(round(ttest_rel(df_tot_0.iloc[:,0],df_tot_0.iloc[:,1])[1],5))
-print(round(ttest_rel(df_tot_0.iloc[:,0],df_tot_0.iloc[:,2])[1],5))
+print(f"{round(ttest_rel(df_tot_0.iloc[:,0],df_tot_0.iloc[:,1])[1],5):.5f}")
+print(f"{round(ttest_rel(df_tot_0.iloc[:,0],df_tot_0.iloc[:,2])[1],5):.5f}")
 
 # MSE improvement
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]).mean(),5))
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]).mean(),5))
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]).std()/np.sqrt(len(df_tot_0)),5))
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]).std()/np.sqrt(len(df_tot_0)),5))
-print(round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]), 0)[1],5))
-print(round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]), 0)[1],5))
+print(f"{round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]), 0)[1],5):.5f}")
+print(f"{round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]), 0)[1],5):.5f}")
 
 ###########################
 ### Example Time Series ###
@@ -422,16 +422,16 @@ print(round(means_arima,5))
 print(round(df_tot.iloc[:,0].std()/np.sqrt(len(df_tot)),5))
 print(round(df_tot.iloc[:,1].std()/np.sqrt(len(df_tot)),5))
 print(round(df_tot.iloc[:,2].std()/np.sqrt(len(df_tot)),5))
-print(round(ttest_rel(df_tot.iloc[:,0],df_tot.iloc[:,1])[1],5))
-print(round(ttest_rel(df_tot.iloc[:,0],df_tot.iloc[:,2])[1],5))
+print(f"{round(ttest_rel(df_tot.iloc[:,0],df_tot.iloc[:,1])[1],5):.5f}")
+print(f"{round(ttest_rel(df_tot.iloc[:,0],df_tot.iloc[:,2])[1],5):.5f}")
 
 # MSE improvement
 print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]).mean(),5))
 print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]).mean(),5))
 print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]).std()/np.sqrt(len(df_tot)),5))
 print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]).std()/np.sqrt(len(df_tot)),5))
-print(round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]), 0)[1],5))
-print(round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]), 0)[1],5))
+print(f"{round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]), 0)[1],5):.5f}")
+print(f"{round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]), 0)[1],5):.5f}")
 
 # RF
 df_tot_1= pd.read_csv('Results/resu_rf_f.csv',index_col=(0))
@@ -449,16 +449,16 @@ print(round(means_rf,5))
 print(round(df_tot_1.iloc[:,0].std()/np.sqrt(len(df_tot_1)),5))
 print(round(df_tot_1.iloc[:,1].std()/np.sqrt(len(df_tot_1)),5))
 print(round(df_tot_1.iloc[:,2].std()/np.sqrt(len(df_tot_1)),5))
-print(round(ttest_rel(df_tot_1.iloc[:,0],df_tot_1.iloc[:,1])[1],5))
-print(round(ttest_rel(df_tot_1.iloc[:,0],df_tot_1.iloc[:,2])[1],5))
+print(f"{round(ttest_rel(df_tot_1.iloc[:,0],df_tot_1.iloc[:,1])[1],5):.5f}")
+print(f"{round(ttest_rel(df_tot_1.iloc[:,0],df_tot_1.iloc[:,2])[1],5):.5f}")
 
 # MSE improvement
 print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]).mean(),5))
 print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]).mean(),5))
 print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]).std()/np.sqrt(len(df_tot_1)),5))
 print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]).std()/np.sqrt(len(df_tot_1)),5))
-print(round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]), 0)[1],5))
-print(round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]), 0)[1],5))
+print(f"{round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]), 0)[1],5):.5f}")
+print(f"{round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]), 0)[1],5):.5f}")
 
 # LSTM
 df_tot_0= pd.read_csv('Results/resu_nn_f.csv',index_col=(0))
@@ -476,16 +476,16 @@ print(round(means_nn,5))
 print(round(df_tot_0.iloc[:,0].std()/np.sqrt(len(df_tot_0)),5))
 print(round(df_tot_0.iloc[:,1].std()/np.sqrt(len(df_tot_0)),5))
 print(round(df_tot_0.iloc[:,2].std()/np.sqrt(len(df_tot_0)),5))
-print(round(ttest_rel(df_tot_0.iloc[:,0],df_tot_0.iloc[:,1])[1],5))
-print(round(ttest_rel(df_tot_0.iloc[:,0],df_tot_0.iloc[:,2])[1],5))
+print(f"{round(ttest_rel(df_tot_0.iloc[:,0],df_tot_0.iloc[:,1])[1],5):.5f}")
+print(f"{round(ttest_rel(df_tot_0.iloc[:,0],df_tot_0.iloc[:,2])[1],5):.5f}")
 
 # MSE improvement
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]).mean(),5))
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]).mean(),5))
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]).std()/np.sqrt(len(df_tot_0)),5))
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]).std()/np.sqrt(len(df_tot_0)),5))
-print(round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]), 0)[1],5))
-print(round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]), 0)[1],5))
+print(f"{round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]), 0)[1],5):.5f}")
+print(f"{round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]), 0)[1],5):.5f}")
 
 ########################################
 ### Results---Plot---Random clusters ###
