@@ -16,11 +16,22 @@ To reproduce the results, execute the following command in your terminal:
 ```bash
 python main.py
 ```
+Then run main_random.py to obtain results with random cluster assignments. 
+```bash
+python main_random.py
+```
+The results are produces by running
+```bash
+python results.py
+```
+
 ## Expected Runtime
 The script should take approximately 5 days to run.
 
 ## Directory Structure
--  main.py: Main script.
+- main.py: Main script.
+- main_random.py: Trains models with random clusters.
+- results.py: Produces the findings discussed in the paper. 
 - functions.py and functions_deepl_learning.py: Functions needed to run the model. 
 - Datasets/: Contains input data required.
 - Results/: Stores the predictions and generated images.
