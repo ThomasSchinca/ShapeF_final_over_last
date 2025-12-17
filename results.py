@@ -751,7 +751,8 @@ for ax in axs:
     if ax == axs[0]:
         ax.spines['left'].set_visible(True)
         ax.set_ylabel('Percentage',fontsize=50)
-        ax.tick_params(axis='y', labelsize=40)
+        ax.set_yticks([0,20,40,60,80,100],[0,20,40,60,80,100],size=40)
+        #ax.tick_params(axis='y', labelsize=40,labelfontfamily="sans-serif")
 patch3 = mpatches.Patch(color='dimgray', label='Positive')   
 patch2 = mpatches.Patch(color='darkgray', label='Zero')        
 patch1 = mpatches.Patch(color='gainsboro', label='Negative')        
