@@ -12,6 +12,7 @@ from scipy.stats import ttest_rel,ttest_1samp
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 import os 
+import statsmodels.api as sm
 os.environ['PATH'] = "/Library/TeX/texbin:" + os.environ.get('PATH', '')
 import matplotlib as mpl
 mpl.rcParams['text.usetex'] = True
@@ -52,6 +53,12 @@ print(round(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]).std()/np.sqrt(len(df_tot))
 print(f"{round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,1]), 0)[1],5):.5f}")
 print(f"{round(ttest_1samp(np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2]), 0)[1],5):.5f}")
 
+# Count fractions
+frac_ar = (df_tot["AR"] == df_tot["ARC"]).mean()
+print(f"AR fraction: {round(frac_ar*100,2)}")
+frac_arx = (df_tot["ARX"] == df_tot["ARC"]).mean()
+print(f"ARX fraction: {round(frac_arx*100,2)}")
+
 # RF
 df_tot_1= pd.read_csv('Results/resu_rf.csv',index_col=(0))
 df_tot_1=df_tot_1.T
@@ -79,6 +86,12 @@ print(round(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]).std()/np.sqrt(len(df_t
 print(f"{round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,1]), 0)[1],5):.5f}")
 print(f"{round(ttest_1samp(np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2]), 0)[1],5):.5f}")
 
+# Count fractions
+frac_rf = (df_tot_1["RF"] == df_tot_1["RFC"]).mean()
+print(f"RF fraction: {round(frac_rf*100,2)}")
+frac_rfx = (df_tot_1["RFX"] == df_tot_1["RFC"]).mean()
+print(f"RFX fraction: {round(frac_rfx*100,2)}")
+
 # LSTM
 df_tot_0= pd.read_csv('Results/resu_nn.csv',index_col=(0))
 df_tot_0=df_tot_0.T
@@ -105,6 +118,12 @@ print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]).std()/np.sqrt(len(df_t
 print(round(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]).std()/np.sqrt(len(df_tot_0)),5))
 print(f"{round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,1]), 0)[1],5):.5f}")
 print(f"{round(ttest_1samp(np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2]), 0)[1],5):.5f}")
+
+# Count fractions
+frac_lstm = (df_tot_0["LSTM"] == df_tot_0["LSTMC"]).mean()
+print(f"LSTM fraction: {round(frac_lstm*100,2)}")
+frac_lstmx = (df_tot_0["LSTMX"] == df_tot_0["LSTMC"]).mean()
+print(f"LSTMX fraction: {round(frac_lstmx*100,2)}")
 
 ###########################
 ### Example Time Series ###
@@ -1122,14 +1141,185 @@ plt.savefig("Results/cases_worst_grid_lstm.eps",dpi=300,bbox_inches="tight")
 plt.show()
 
 
+#########################################################
+### MSE improvement per characteristic of time series ###
+#########################################################
+
+# Load the feature datasets
+t_cara = pd.read_csv('Datasets/hctsa_features.csv',index_col=(0))
+cara_df = pd.read_csv('Datasets/hctsa_timeseries-info.csv',index_col=0)
+data_m = pd.read_csv('Datasets/hctsa_datamatrix.csv',header=None)
+
+# Analyze the AR model
+data_c = pd.concat([data_m,np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2])],axis=1)
+data_c = data_c[data_c.iloc[:,7730].notna()]
+y = data_c.iloc[:, -1]  # Select the last column as y
+X = data_c.iloc[:, :-1]  # Select all other columns as X
+
+# Find the columns with a correlation higher than 0.8 with y
+significant_vars = []
+for col in X.columns:
+    corr = X[col].corr(y)
+    if abs(corr) > 0.8:
+        significant_vars.append(col)
+
+# Select only the significant variables, add a constant column, and drop missing values
+X =X.iloc[:,significant_vars]
+X = sm.add_constant(X)
+X = X.dropna()
+
+# Select the corresponding y values
+y_na = y.loc[X.index]
+
+# Fit an OLS model and print the summary
+model = sm.OLS(y_na,X).fit()
+p_values = model.pvalues
+print(model.summary())
+
+# Repeat the same steps for RF and LSTM models
+# RF
+
+data_c = pd.concat([data_m,np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2])],axis=1)
+data_c = data_c[data_c.iloc[:,7730].notna()]
+y = data_c.iloc[:, -1]  # Select the last column as y
+X = data_c.iloc[:, :-1]  # Select all other columns as X
+significant_vars = []
+for col in X.columns:
+    corr = X[col].corr(y)
+    
+    # If the correlation is higher than 0.8, add the column to the significant_vars list
+    if abs(corr) > 0.8:
+        significant_vars.append(col)
+        
+X =X.iloc[:,significant_vars]
+X = sm.add_constant(X)
+X = X.dropna()
+y_na = y.loc[X.index]
+model = sm.OLS(y_na,X).fit()
+p_values = model.pvalues
+print(model.summary())
+
+# LSTM
+
+data_c = pd.concat([data_m,np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2])],axis=1)
+data_c = data_c[data_c.iloc[:,7730].notna()]
+y = data_c.iloc[:, -1]  # Select the last column as y
+X = data_c.iloc[:, :-1]  # Select all other columns as X
+significant_vars = []
+for col in X.columns:
+    corr = X[col].corr(y)
+    
+    # If the correlation is higher than 0.8, add the column to the significant_vars list
+    if abs(corr) > 0.8:
+        significant_vars.append(col)
+        
+X =X.iloc[:,significant_vars]
+X = sm.add_constant(X)
+X = X.dropna()
+y_na = y.loc[X.index]
+model = sm.OLS(y_na,X).fit()
+p_values = model.pvalues
+print(model.summary())
 
 
+#####################
+### MSE by fields ###
+#####################
 
+# Extract and parse keywords from 'Keywords' column of cara_df dataframe
+ts_kind=[]
+for i in cara_df['Keywords']:
+    text = i.split(',')
+    if text[0]=='synthetic':
+        if (text[1]=='map') or (text[1]=='dynsys'):  
+            ts_kind.append(text[2])
+        else:    
+            ts_kind.append(text[1])
+    else : 
+        ts_kind.append(text[0])
 
+# Generate a dataframe with log-ratios of RF model's MSE and filter valid rows
+data_c = pd.concat([data_m,np.log(df_tot_1.iloc[:,0]/df_tot_1.iloc[:,2])],axis=1)
+data_c = data_c[data_c.iloc[:,7730].notna()]
 
+# Combine the parsed keywords and log-ratios into a dataframe
+ts_kind_t = pd.concat([pd.Series(ts_kind),data_c.iloc[:,-1]],axis=1)
+ts_kind_t = ts_kind_t.dropna(axis=0)
+ts_kind_t.columns=['Type','Ratio']
 
+# Group the dataframe by 'Type' and calculate the mean, then sort the dataframe
+ts_kind_tot = ts_kind_t.groupby(['Type']).mean()
+ts_kind_tot_rf= ts_kind_tot.sort_values(by=['Ratio'],ascending=True)
 
+# Plot the sorted dataframe as horizontal bar plots
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(65, 30))
 
+# RF Model
+ts_kind_tot_rf.plot(kind='barh', ax=ax2, color="gray")
+ax2.set_title('RF: Mean MSE Ratio', size=45)
+#ax1.set_ylabel('Fields of the TS')
+ax2.set_xlabel('')   
+ax2.set_ylabel('')       
+ax2.set_xlim(-max(abs(ts_kind_tot_rf.values)), max(abs(ts_kind_tot_rf.values)))
+ax2.tick_params(axis='x', labelsize=35)
+ax2.tick_params(axis='y', labelsize=35)
+
+# Repeat the same process for LSTM and AR models
+# LSTM Model
+data_c = pd.concat([data_m,np.log(df_tot_0.iloc[:,0]/df_tot_0.iloc[:,2])],axis=1)
+data_c = data_c[data_c.iloc[:,7730].notna()]
+ts_kind_t = pd.concat([pd.Series(ts_kind),data_c.iloc[:,-1]],axis=1)
+ts_kind_t = ts_kind_t.dropna(axis=0)
+ts_kind_t.columns=['Type','Ratio']
+ts_kind_tot = ts_kind_t.groupby(['Type']).mean()
+ts_kind_tot_lstm= ts_kind_tot.sort_values(by=['Ratio'],ascending=True)
+ts_kind_tot_lstm.plot(kind='barh', ax=ax3, color="gray")
+
+#ax2.set_xlabel('Log Ratio')
+ax3.set_title('LSTM: Mean MSE Ratio', size=45) 
+ax3.set_ylabel('')       
+ax3.set_xlim(-max(abs(ts_kind_tot_lstm.values)), max(abs(ts_kind_tot_lstm.values)))
+ax3.tick_params(axis='x', labelsize=35)
+ax3.tick_params(axis='y', labelsize=35)
+
+# AR Model
+data_c = pd.concat([data_m,np.log(df_tot.iloc[:,0]/df_tot.iloc[:,2])],axis=1)
+data_c = data_c[data_c.iloc[:,7730].notna()]
+ts_kind_t = pd.concat([pd.Series(ts_kind),data_c.iloc[:,-1]],axis=1)
+ts_kind_t = ts_kind_t.dropna(axis=0)
+ts_kind_t.columns=['Type','Ratio']
+ts_kind_tot = ts_kind_t.groupby(['Type']).mean()
+ts_kind_tot_ar= ts_kind_tot.sort_values(by=['Ratio'],ascending=True)
+ts_kind_tot_ar.plot(kind='barh', ax=ax1, color="gray")
+ax1.set_ylabel('')
+ax1.set_title('ARIMA: Mean MSE Ratio', size=45)
+ax1.set_xlim(-max(abs(ts_kind_tot_ar.values)), max(abs(ts_kind_tot_ar.values)))
+ax1.tick_params(axis='x', labelsize=35)
+ax1.tick_params(axis='y', labelsize=35)
+
+positive_ar = ts_kind_tot_ar[ts_kind_tot_ar > 0].dropna()
+positive_nn = ts_kind_tot_lstm[ts_kind_tot_lstm > 0].dropna()
+positive_rf = ts_kind_tot_rf[ts_kind_tot_rf > 0].dropna()
+common_indexes = set(positive_rf.index) & set(positive_ar.index) & set(positive_nn.index)
+indexes_rf = list(ts_kind_tot_rf.index)
+indexes_ar = list(ts_kind_tot_ar.index)
+indexes_nn = list(ts_kind_tot_lstm.index)
+def highlight_common_positives(indexes, ax):
+    for i, bar in enumerate(ax.patches):
+        y_label = indexes[i]  # Get the index corresponding to the current bar
+        if y_label in common_indexes and bar.get_width() > 0:
+            bar.set_facecolor('black')
+            ax.get_yticklabels()[i].set_color('black')
+
+# Highlight common positive indexes in red for all three plots
+highlight_common_positives(indexes_rf, ax2)
+highlight_common_positives(indexes_nn, ax3)
+highlight_common_positives(indexes_ar, ax1)
+
+for ax in (ax1, ax2, ax3):
+    ax.legend_.remove()
+plt.savefig("Results/mse_by_fields.eps",dpi=300,bbox_inches="tight")
+plt.show()
 
 
 
